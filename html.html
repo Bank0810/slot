@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Slot Machine</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #1e1e1e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slot-machine {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff;
+            padding: 20px;
+            border-radius: 10px;
+            background: #333;
+        }
+
+        .header {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .score {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .slots {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .slot {
+            width: 60px;
+            height: 60px;
+            background: white;
+            color: black;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slot-machine">
+        <div class="header">🎰 Slot Machine</div>
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="slots">
+            <div class="slot" id="slot1">🍒</div>
+            <div class="slot" id="slot2">🍋</div>
+            <div class="slot" id="slot3">🍊</div>
+        </div>
+        <button id="spinBtn" onclick="spin()">Spin</button>
+    </div>
+
+    <!-- เสียง -->
+    <audio id="spinSound" src="spin.mp3"></audio>
+    <audio id="winSound" src="winSound.mp3"></audio>
+
+    <script>
+        const symbols = ['🍒', '🍋', '🍊', '⭐', '7️⃣', '🔔'];
+        let score = 0;
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function spin() {
+            const button = document.getElementById("spinBtn");
+            const spinSound = document.getElementById('spinSound');
+            const winSound = document.getElementById('winSound');
+            button.disabled = true;
+
+            spinSound.currentTime = 0;
+            spinSound.play();
+
+            let count = 15;
+            const slots = [
+                document.getElementById('slot1'),
+                document.getElementById('slot2'),
+                document.getElementById('slot3')
+            ];
+
+            let interval = setInterval(() => {
+                slots.forEach(slot => {
+                    slot.textContent = getRandomSymbol();
+                });
+                count--;
+                if (count === 0) {
+                    clearInterval(interval);
+
+                    const val1 = slots[0].textContent;
+                    const val2 = slots[1].textContent;
+                    const val3 = slots[2].textContent;
+
+                    if (val1 === val2 && val1 === val3) {
+                        score += 100;
+                        document.getElementById('score').textContent = score;
+                        setTimeout(() => {
+                            winSound.currentTime = 0;
+                            winSound.play();
+                            alert("🎉 Jackpot! Score +100");
+                        }, 500);
+                    } else if (val1 === val2 || val2 === val3 || val1 === val3) {
+                        score += 50;
+                        document.getElementById('score').textContent = score;
+                        setTimeout(() => {
+                            winSound.currentTime = 0;
+                            winSound.play();
+                            alert("🎉 Lucky Match! Score +50");
+                        }, 500);
+                    }
+
+                    button.disabled = false;
+                }
+            }, 100);
+        }
+    </script>
+
+</body>
+
+</html>
